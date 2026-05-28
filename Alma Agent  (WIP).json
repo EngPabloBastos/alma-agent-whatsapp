@@ -1,0 +1,739 @@
+{
+  "name": "Alma Agent (image TEST) WIP",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4cd9aade-38ca-4821-801a-9a99838830bb",
+              "name": "Instance",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "8746f3cf-bfbd-4b72-9fa0-da72969c3a7e",
+              "name": "From",
+              "value": "={{ $json.body.data.key.remoteJid }}",
+              "type": "string"
+            },
+            {
+              "id": "baab5bf6-7e5d-4226-b3cc-e9011b862036",
+              "name": "PushName",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "6a189d52-feaf-4cac-bcf1-9fe2f058ccb5",
+              "name": "message",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "4d8d95cd-eb5c-4f0a-9084-c1357e4af04b",
+              "name": "fromMe",
+              "value": "={{ $json.body.data.key.fromMe }}",
+              "type": "boolean"
+            },
+            {
+              "id": "3933404b-90b0-436b-913f-784920fd0b2f",
+              "name": "Type",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1072,
+        160
+      ],
+      "id": "587fdba2-eb1c-4d51-a8b7-2c0c72e24969",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "instanceName": "={{ $('Edit Fields').item.json.Instance }}",
+        "remoteJid": "={{ $('Edit Fields').item.json.From }}",
+        "messageText": "={{ $json.output }}",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        800,
+        528
+      ],
+      "id": "0d0ceab1-d732-4126-837e-b3b8a478b7b2",
+      "name": "Enviar texto",
+      "credentials": {
+        "evolutionApi": {
+          "id": "7OGHeKMIvUBxsCJQ",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Edit Fields').item.json.message }}",
+        "options": {
+          "systemMessage": "Você é a assistente virtual da Alma Tecnologia, uma empresa de soluções \nde pagamento subadquirente da PagBank. Seu papel é atender clientes pelo \nWhatsApp de forma educada, acolhedora e profissional, respondendo dúvidas \nde forma clara e objetiva, e preparar o cliente para o atendimento com um \nespecialista humano.\n\n---\n\n## IDENTIDADE\n\n- Nome: Assistente Alma Tecnologia\n- Canal: WhatsApp\n- Tom: Educado, humano, acolhedor, sem ser informal demais\n- Idioma: Português brasileiro\n\n---\n\n## SOBRE A EMPRESA\n\nA Alma Tecnologia é uma subadquirente da PagBank, atuando desde 2023.\nTrabalhamos com as mesmas máquinas da PagBank, porém com taxas próprias \ne mais competitivas.\n\n- Site: https://almatecnologia.com.br/\n- CNPJ: 56.022.549/0001-31\n\n---\n\n## PRODUTOS E TAXAS\n\n- Débito: a partir de 0,99%\n- Crédito: a partir de 2,99%\n- Parcelamento: em até 18x nas maquininhas\n- Modelos de recebimento:\n  - D0: recebe na hora da venda\n  - D1: recebe no dia seguinte, incluindo fins de semana e feriados\n\n---\n\n## POLÍTICA COMERCIAL\n\n- Não existe contrato de fidelidade ou multa de cancelamento\n- O cliente tem 30 dias de garantia\n- Após os 30 dias, se não quiser mais usar, pode simplesmente parar — \n  não precisa devolver a máquina\n- Atendemos tanto Pessoa Física (CPF) quanto Pessoa Jurídica (CNPJ)\n\n---\n\n## FLUXO DE ATENDIMENTO\n\nSiga sempre esta ordem:\n\n1. SAUDAÇÃO: Cumprimente o cliente de forma calorosa ao iniciar a conversa.\n\n2. ESCUTA ATIVA: Ouça a dúvida ou situação do cliente com atenção. \n   Demonstre empatia antes de responder, especialmente em casos de \n   reclamação ou insatisfação.\n\n3. RESPOSTA: Responda de forma clara, breve e objetiva. Não invente \n   informações. Se não souber algo, diga que vai verificar com um \n   especialista.\n\n4. COLETA DE DADOS: Antes de encaminhar para o especialista, solicite \n   o CPF ou CNPJ do cliente com a seguinte justificativa natural:\n   \"Para que nosso especialista já possa consultar as taxas disponíveis \n   e verificar sua elegibilidade antes de falar com você, poderia me \n   informar seu CPF ou CNPJ?\"\n\n5. ENCAMINHAMENTO: Após coletar o dado, informe que um especialista \n   entrará em contato. Use variações como:\n   - \"Ótimo! Um especialista da Alma entrará em contato com você em \n     instantes. 😊\"\n   - \"Perfeito! Vou encaminhar suas informações para um de nossos \n     especialistas, que logo falará com você.\"\n   - \"Prontinho! Nossa equipe já vai te atender com todas as informações.\"\n\n---\n\n## ENVIO DE TABELA DE TAXAS\n\nQuando o cliente pedir para ver a tabela de taxas, quiser comparar \nvisualmente os planos ou perguntar \"quais são as taxas completas\", \nvocê deve primeiro descobrir qual modelo de recebimento ele prefere, \ncaso ele não tenha dito ainda:\n\n\"Você prefere receber o pagamento na hora (D0) ou no dia seguinte (D1)?\"\n\nApós o cliente responder, retorne APENAS o código correspondente, \nsem nenhum texto antes ou depois:\n\n- Cliente quer D0 (receber na hora): [ENVIAR_TABELA_TAXAS_D0]\n- Cliente quer D1 (receber no dia seguinte): [ENVIAR_TABELA_TAXAS_D1]\n\nIMPORTANTE:\n- Não escreva nada além do código quando for enviá-lo\n- Não explique o que é o código\n- Não adicione emojis ou saudações junto ao código\n- Se o cliente já deixou claro o modelo (ex: \"quero ver as taxas do D0\"), \n  envie o código direto, sem perguntar novamente\n\n---\n\n## REGRAS DE COMPORTAMENTO\n\n- Seja sempre educado, mesmo que o cliente esteja insatisfeito ou agressivo\n- Em casos de reclamação, pratique escuta ativa: valide o sentimento do \n  cliente antes de qualquer explicação (\"Entendo sua situação, lamento \n  por isso...\")\n- Nunca prometa algo que não está descrito neste prompt\n- Nunca fale mal de concorrentes\n- Não responda sobre assuntos completamente fora do contexto de pagamentos \n  e da Alma Tecnologia — redirecione gentilmente para o foco do atendimento\n- Se não souber responder algo, não invente: diga que vai encaminhar para \n  um especialista\n- Mantenha as respostas curtas e diretas — este é um atendimento por \n  WhatsApp, não um e-mail formal\n- Nunca peça telefone — ele já está disponível pelo próprio WhatsApp\n\n---\n\n## EXEMPLOS DE SITUAÇÕES\n\nDÚVIDA SOBRE TAXAS (sem especificar modelo):\nCliente: \"Quero ver a tabela de taxas.\"\nIA: \"Claro! Você prefere receber o pagamento na hora (D0) ou no dia seguinte (D1)?\"\nCliente: \"Na hora.\"\nIA: [ENVIAR_TABELA_TAXAS_D0]\n\nDÚVIDA SOBRE TAXAS (já especificou modelo):\nCliente: \"Quero ver as taxas do D1.\"\nIA: [ENVIAR_TABELA_TAXAS_D1]\n\nDÚVIDA SOBRE TAXAS (pergunta simples, sem pedir tabela):\nCliente: \"Qual a taxa do crédito?\"\nIA: \"Nossas taxas de crédito começam a partir de 2,99%! E no débito, \na partir de 0,99%. Parcelamos em até 18x também. 😊 Para consultar a \ntaxa exata no seu perfil, pode me informar seu CPF ou CNPJ?\"\n\nRECLAMAÇÃO:\nCliente: \"Estou insatisfeito com o atendimento.\"\nIA: \"Lamento muito que você tenha passado por isso. Sua experiência é \nmuito importante para nós e quero garantir que isso seja resolvido da \nmelhor forma. Vou encaminhar você agora para um de nossos especialistas. \nPode me informar seu CPF ou CNPJ para agilizarmos?\"\n\nDÚVIDA SOBRE CANCELAMENTO:\nCliente: \"Se eu quiser parar de usar, preciso devolver a maquininha?\"\nIA: \"Não! Trabalhamos sem fidelidade. Você tem 30 dias de garantia e, \napós esse período, se decidir não usar mais, pode simplesmente parar — \nsem precisar devolver ou pagar multa alguma. 😊\"\n\nDÚVIDA FORA DO ESCOPO:\nCliente: \"Você pode me ajudar com meu imposto de renda?\"\nIA: \"Esse assunto foge um pouquinho do que posso te ajudar por aqui! \nMas se tiver qualquer dúvida sobre nossas soluções de pagamento, \nestou à disposição. 😊\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        48,
+        416
+      ],
+      "id": "d700ace4-affc-421f-a387-8f54f846cdfa",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        64,
+        640
+      ],
+      "id": "8710a96d-def3-4edb-9f3e-d196b503f4f2",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DZ29D56WkDthcMFp",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Edit Fields').item.json.PushName }}_{{ $('Edit Fields').item.json.From }}",
+        "contextWindowLength": 20
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        192,
+        640
+      ],
+      "id": "1193fca1-3e96-473d-bb39-e9eec846150e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        112,
+        112
+      ],
+      "id": "22e26890-6ec6-49cf-a503-ee1288314246",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "Fazer Nada",
+        "height": 304,
+        "width": 400,
+        "color": "#FB8E8E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "18837655-78fb-46b6-9a69-9eb00f4b8976",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhookk",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1312,
+        160
+      ],
+      "id": "8255291c-8d81-469e-a205-0e0367c8583e",
+      "name": "Webhook",
+      "webhookId": "a04eae5b-e1f4-4e1b-821a-30956c22d565"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d45219a9-9da8-4753-a9cb-f0923222f62c",
+              "name": "Bot Name",
+              "value": "AtendAI",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -864,
+        160
+      ],
+      "id": "a76361a6-3ff8-4114-9616-41e8dd59c6ba",
+      "name": "Config Global"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "49f9dff6-a778-4be0-a346-a1907abbf259",
+              "leftValue": "={{ $('Webhook').item.json.body.data.key.fromMe }}",
+              "rightValue": false,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -624,
+        160
+      ],
+      "id": "f9d6b482-d284-4bc7-a2cd-112cf9f8e034",
+      "name": "FromME"
+    },
+    {
+      "parameters": {
+        "operation": "set",
+        "key": "={{ $('Config Global').item.json['Bot Name'] }}_{{ $('Edit Fields').item.json.From }}_block",
+        "value": "true",
+        "expire": true,
+        "ttl": 1200
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        64
+      ],
+      "id": "ff3e5593-34e3-45e2-9d89-3ed0de64028d",
+      "name": "Chave Block",
+      "credentials": {
+        "redis": {
+          "id": "sy53bXNU6x0EzZW8",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "propertyName": "isBlocked",
+        "key": "={{ $('Config Global').item.json['Bot Name'] }}_{{ $('Edit Fields').item.json.From }}_block",
+        "keyType": "=automatic",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.redis",
+      "typeVersion": 1,
+      "position": [
+        -416,
+        224
+      ],
+      "id": "21e4a696-bb26-46ef-87a8-9c3ec12939c7",
+      "name": "Redis",
+      "credentials": {
+        "redis": {
+          "id": "sy53bXNU6x0EzZW8",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "14e00433-2d72-4053-93c8-bdd040716a70",
+              "leftValue": "={{ $json.isBlocked }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -224,
+        224
+      ],
+      "id": "2a37d7d3-2d82-41f2-bc21-fe7f5033909e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "content": "Webhook e tratamento de dados",
+        "height": 304,
+        "width": 448
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1360,
+        64
+      ],
+      "id": "b97817d5-885c-45b9-8c00-fb54f3a63329",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "Tratamento de Cliente/ Atendente",
+        "height": 384,
+        "width": 800,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -896,
+        16
+      ],
+      "id": "9a7b39ed-8a46-4bcf-8fbe-07efb766a1ad",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "[ENVIAR_TABELA_TAXAS_D0]",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "5b6ef095-eaf0-4836-af55-f9f581894691"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "80dc888c-816c-4034-bee1-6f981150bc23",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "=[ENVIAR_TABELA_TAXAS_D1]",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1fd67b63-f25b-4f5f-bc13-e10ea5ef931e",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "[ENVIAR_TABELA_TAXAS_D1]",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notContains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b78a3065-e69d-48e9-8a89-ce0f5179d056",
+                    "leftValue": "={{ $json.output }}",
+                    "rightValue": "[ENVIAR_TABELA_TAXAS_D0]",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notContains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        400,
+        416
+      ],
+      "id": "80357db1-cefb-400d-b82d-5e99d63208fa",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Edit Fields').item.json.Instance }}",
+        "remoteJid": "={{ $('Edit Fields').item.json.From }}",
+        "media": "https://i.ibb.co/whYNh8dN/D1.jpg",
+        "caption": "Aqui está nossa tabela de taxas para o dia seguinte (D1)! 😊 Para prosseguirmos com o seu atendimento, pode me informar seu CPF ou CNPJ?",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        816,
+        144
+      ],
+      "id": "af5cada2-ee0d-4762-afe8-ecd9cccc250a",
+      "name": "Enviar Imagem D1",
+      "credentials": {
+        "evolutionApi": {
+          "id": "7OGHeKMIvUBxsCJQ",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "messages-api",
+        "operation": "send-image",
+        "instanceName": "={{ $('Edit Fields').item.json.Instance }}",
+        "remoteJid": "={{ $('Edit Fields').item.json.From }}",
+        "media": "https://i.ibb.co/MkKMG4Hg/D0.jpg",
+        "caption": "Aqui está nossa tabela de taxas para receber NA HORA (D0)! 😊 Para prosseguirmos com o seu atendimento, pode me informar seu CPF ou CNPJ?",
+        "options_message": {}
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        816,
+        -112
+      ],
+      "id": "29940c67-8a89-43a2-a773-c3b382614da8",
+      "name": "Enviar imagem D0",
+      "credentials": {
+        "evolutionApi": {
+          "id": "7OGHeKMIvUBxsCJQ",
+          "name": "Evolution account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Enviar Imagens",
+        "height": 544,
+        "width": 448,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -176
+      ],
+      "id": "6a66072f-a747-4925-a08b-496684235bc6",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 192,
+        "width": 304
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        -128
+      ],
+      "id": "ed07c854-5a46-4ebd-a9e1-0e9a3578373c",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "",
+        "height": 192,
+        "width": 304
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        720,
+        128
+      ],
+      "id": "c59728bf-cf78-4bd3-bc38-3c116115256a",
+      "name": "Sticky Note6"
+    },
+    {
+      "parameters": {
+        "content": "Enviar mensagens",
+        "height": 272,
+        "width": 304,
+        "color": 2
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        704,
+        448
+      ],
+      "id": "1be458d8-821b-4759-a03f-68c64883f332",
+      "name": "Sticky Note7"
+    },
+    {
+      "parameters": {
+        "content": "IA de mensagens e switch de tipo (Imagem ou mensagem)",
+        "height": 416,
+        "width": 608,
+        "color": "#FB8E8E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        384
+      ],
+      "id": "a2ecc98d-2521-469e-9fd1-10fe3fb8ae68",
+      "name": "Sticky Note8"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Config Global",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Config Global": {
+      "main": [
+        [
+          {
+            "node": "FromME",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FromME": {
+      "main": [
+        [
+          {
+            "node": "Chave Block",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Redis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Enviar imagem D0",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Imagem D1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar texto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3d2002f7-d053-48b3-ac56-561398a07809",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1ed64103369af19cb38777c0227868f307e7da3a2428a01461fa16e1ee419bf4"
+  },
+  "id": "9jz69covz5jQdJI3",
+  "tags": []
+}
